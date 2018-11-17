@@ -14,6 +14,7 @@ use PhpCloudOrg\Meta\CodeStyleFixer\ConfigFactory;
 
 $code_style = new ConfigFactory(
     __DIR__,
+    null,
     'PhpCloud.org Meta',
     'PhpCloud.org Core Team',
     'core@phpcloud.org'

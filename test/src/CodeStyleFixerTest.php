@@ -71,8 +71,24 @@ class CodeStyleFixerTest extends TestCase
         ];
     }
 
+    public function testCustomLocation()
+    {
+        $config = $this->getFactory(
+            null,
+            [
+                'test/fixtures/codestyle-fixer-scan-test',
+            ]
+        )->getConfig();
+
+        $this->assertContains(
+            $this->project_root . '/test/fixtures/codestyle-fixer-scan-test/file_to_find.php',
+            $this->getFilesFoundByFinder($config)
+        );
+    }
+
     private function getFactory(
         string $project_root = null,
+        array $dirs_to_scan = null,
         string $project_name = null,
         string $project_author = null,
         string $project_contact_address = null
@@ -80,6 +96,7 @@ class CodeStyleFixerTest extends TestCase
     {
         return (new ConfigFactory(
             $project_root ?? $this->project_root,
+            $dirs_to_scan,
             $project_name ?? 'Project',
             $project_author ?? 'Author',
             $project_contact_address ?? 'author@example.com'

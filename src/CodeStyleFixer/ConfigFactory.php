@@ -21,15 +21,21 @@ class ConfigFactory implements ConfigFactoryInterface
     private $project_name;
     private $project_author;
     private $project_contact_address;
+    /**
+     * @var array
+     */
+    private $dirs_to_scan;
 
     public function __construct(
         string $project_root,
+        ?array $dirs_to_scan,
         string $project_name,
         string $project_author,
         string $project_contact_address
     )
     {
         $this->project_name = $project_name;
+        $this->dirs_to_scan = $dirs_to_scan ?? ['src', 'test'];
         $this->project_author = $project_author;
         $this->project_contact_address = $project_contact_address;
         $this->project_root = $project_root;
@@ -89,10 +95,12 @@ class ConfigFactory implements ConfigFactoryInterface
     {
         return (new Finder())
             ->in(
-                [
-                    $this->project_root . '/src',
-                    $this->project_root . '/test',
-                ]
+                array_map(
+                    function (string $dir_to_scan) {
+                        return $this->project_root . '/' . $dir_to_scan;
+                    },
+                    $this->dirs_to_scan
+                )
             )
             ->exclude($this->project_root . '/vendor')
             ->name('*.php');
