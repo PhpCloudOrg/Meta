@@ -29,7 +29,12 @@ class CodeRepository implements CodeRepositoryInterface
         $this->command_runner = $command_runner;
     }
 
-    public function getCommittedFiles(): iterable
+    public function getRepositoryPath(): string
+    {
+        return $this->repository_path;
+    }
+
+    public function getChangedFiles(): iterable
     {
         $lines = explode(
             "\n",

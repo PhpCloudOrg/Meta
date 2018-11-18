@@ -8,9 +8,9 @@
 
 declare(strict_types=1);
 
-namespace PhpCloudOrg\Meta\CodeRepository\CommittedFilesResolver;
+namespace PhpCloudOrg\Meta\CodeQualityChecker\QualityCheck;
 
-interface CommittedFilesResolverInterface
+interface QualityCheckInterface
 {
-    public function getCommittedFiles(): iterable;
+    public function check(string $project_path, array $changed_files): void;
 }

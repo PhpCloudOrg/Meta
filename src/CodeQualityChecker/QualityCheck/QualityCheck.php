@@ -8,10 +8,8 @@
 
 declare(strict_types=1);
 
-namespace PhpCloudOrg\Meta\CodeRepository;
+namespace PhpCloudOrg\Meta\CodeQualityChecker\QualityCheck;
 
-interface CodeRepositoryInterface
+abstract class QualityCheck implements QualityCheckInterface
 {
-    public function getRepositoryPath(): string;
-    public function getChangedFiles(): iterable;
 }

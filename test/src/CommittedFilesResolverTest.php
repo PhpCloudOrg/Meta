@@ -42,7 +42,7 @@ class CommittedFilesResolverTest extends TestCase
 
         $repo = new CodeRepository(__DIR__, $command_runner);
 
-        $committed_files = $repo->getCommittedFiles();
+        $committed_files = $repo->getChangedFiles();
 
         $this->assertContains('test/src/CommandRunnerTest.php', $committed_files);
         $this->assertNotContains(dirname(__DIR__) . '/bootstrap.php', $committed_files);

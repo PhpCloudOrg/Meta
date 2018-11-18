@@ -8,10 +8,9 @@
 
 declare(strict_types=1);
 
-namespace PhpCloudOrg\Meta\CodeRepository;
+namespace PhpCloudOrg\Meta\CodeQualityChecker\FilePathMatcher;
 
-interface CodeRepositoryInterface
+interface FilePathMatcherInterface
 {
-    public function getRepositoryPath(): string;
-    public function getChangedFiles(): iterable;
+    public function shouldCheck(string $file_path): bool;
 }
