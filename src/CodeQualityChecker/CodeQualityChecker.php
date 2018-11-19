@@ -44,15 +44,38 @@ class CodeQualityChecker
 
     public function communicateFailure(\Throwable $e, callable $output_callback)
     {
-        call_user_func($output_callback, sprintf('Configured checks failed. Reason: %s', $e->getMessage()));
-        call_user_func($output_callback, '    File: ' . $e->getFile());
-        call_user_func($output_callback, '    Line: ' . $e->getLine());
+        call_user_func($output_callback, '');
+        call_user_func($output_callback, 'Configured checks failed!');
+
+        $this->outputExceptionDetails($e, $output_callback, '    ');
+    }
+
+    private function outputExceptionDetails(\Throwable $e, callable $output_callback, string $indent)
+    {
+        call_user_func($output_callback, '');
+        call_user_func(
+            $output_callback,
+            sprintf(
+                $indent . '(%s) %s',
+                get_class($e),
+                $e->getMessage()
+            )
+        );
+        call_user_func(
+            $output_callback,
+            sprintf(
+                $indent . 'File %s on line %d',
+                $e->getFile(),
+                $e->getLine()
+            )
+        );
 
         if ($e->getPrevious()) {
-            call_user_func($output_callback, '');
-            call_user_func($output_callback, sprintf('    Previous: %s', $e->getPrevious()->getMessage()));
-            call_user_func($output_callback, '        File: ' . $e->getPrevious()->getFile());
-            call_user_func($output_callback, '        Line: ' . $e->getPrevious()->getLine());
+            $this->outputExceptionDetails(
+                $e->getPrevious(),
+                $output_callback,
+                $indent . '    '
+            );
         }
     }
 }
