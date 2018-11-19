@@ -13,5 +13,8 @@ namespace PhpCloudOrg\Meta\CodeRepository;
 interface CodeRepositoryInterface
 {
     public function getRepositoryPath(): string;
+    public function getFilePath(string $file_path): string;
+    public function fileExists(string $file_path): bool;
     public function getChangedFiles(): iterable;
+    public function stageFile(string $file_path);
 }

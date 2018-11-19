@@ -12,6 +12,7 @@ namespace PhpCloudOrg\Meta\Test;
 
 use PhpCloudOrg\Meta\CodeQualityChecker\FilePathMatcher\FilePathMatcher;
 use PhpCloudOrg\Meta\CodeQualityChecker\QualityCheck\CodeStyleFixerQualityCheck;
+use PhpCloudOrg\Meta\CodeRepository\CodeRepositoryInterface;
 use PhpCloudOrg\Meta\CommandRunner\CommandRunnerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -27,11 +28,19 @@ class CodeStyleFixerQualityCheckTest extends TestCase
             ->method('runCommand')
             ->willReturn('');
 
+        /** @var MockObject|CodeRepositoryInterface $repository */
+        $repository = $this->createMock(CodeRepositoryInterface::class);
+        $repository
+            ->expects($this->atLeast(3))
+            ->method('fileExists')
+            ->willReturn(true);
+
         $check = new CodeStyleFixerQualityCheck(
-            __DIR__,
+            $repository,
             $command_runner,
             'php-cs-fixer',
             '.php_cs.php',
+            null,
             new FilePathMatcher('src', 'php'),
             new FilePathMatcher('test/src', 'php')
         );

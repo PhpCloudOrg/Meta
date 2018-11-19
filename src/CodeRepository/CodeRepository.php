@@ -34,6 +34,16 @@ class CodeRepository implements CodeRepositoryInterface
         return $this->repository_path;
     }
 
+    public function getFilePath(string $file_path): string
+    {
+        return $this->repository_path . '/'. $file_path;
+    }
+
+    public function fileExists(string $file_path): bool
+    {
+        return (bool) file_exists($this->getFilePath($file_path));
+    }
+
     public function getChangedFiles(): iterable
     {
         $lines = explode(
@@ -52,6 +62,15 @@ class CodeRepository implements CodeRepositoryInterface
         }
 
         return $result;
+    }
+
+    public function stageFile(string $file_path)
+    {
+        $this->command_runner->runCommand(
+            $this->prepareGitCommand(
+                sprintf('add %s', escapeshellarg($file_path))
+            )
+        );
     }
 
     private function prepareGitCommand($command): string

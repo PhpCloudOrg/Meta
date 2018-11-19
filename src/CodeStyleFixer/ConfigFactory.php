@@ -69,6 +69,7 @@ class ConfigFactory implements ConfigFactoryInterface
                     'space_after_semicolon' => true,
                     'no_singleline_whitespace_before_semicolons' => true,
                     'cast_spaces' => true,
+                    'self_accessor' => false,
                     'standardize_not_equals' => true,
                     'ternary_operator_spaces' => true,
                     'trim_array_spaces' => true,
