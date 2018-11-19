@@ -10,6 +10,8 @@ declare(strict_types=1);
 
 namespace PhpCloudOrg\Meta\CodeQualityChecker\FileSignatureResolver;
 
+use RuntimeException;
+
 class FileSignatureResolver implements FileSignatureResolverInterface
 {
     public function getSignature(string $file_path): string
@@ -18,6 +20,6 @@ class FileSignatureResolver implements FileSignatureResolverInterface
             return md5_file($file_path);
         }
 
-        throw new \RuntimeException(sprintf('File %s not found.', $file_path));
+        throw new RuntimeException(sprintf('File %s not found.', $file_path));
     }
 }
