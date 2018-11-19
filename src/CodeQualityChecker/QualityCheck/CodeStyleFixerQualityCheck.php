@@ -12,6 +12,7 @@ namespace PhpCloudOrg\Meta\CodeQualityChecker\QualityCheck;
 
 use Exception;
 use PhpCloudOrg\Meta\CodeQualityChecker\FilePathMatcher\FilePathMatcherInterface;
+use PhpCloudOrg\Meta\CodeQualityChecker\FileSignatureResolver\FileSignatureResolverInterface;
 use PhpCloudOrg\Meta\CodeRepository\CodeRepositoryInterface;
 use PhpCloudOrg\Meta\CommandRunner\CommandRunnerInterface;
 
@@ -23,10 +24,15 @@ class CodeStyleFixerQualityCheck extends QualityCheck
     private $php_cs_fixer_config_file;
     private $output_callback;
     private $file_path_matchers;
+    /**
+     * @var FileSignatureResolverInterface
+     */
+    private $file_signature_resolver;
 
     public function __construct(
         CodeRepositoryInterface $repository,
         CommandRunnerInterface $command_runner,
+        FileSignatureResolverInterface $file_signature_resolver,
         string $php_cs_fixer_binary = 'php-cs-fixer',
         string $php_cs_fixer_config_file = '.php_cs.php',
         callable $output_callback = null,
@@ -35,6 +41,7 @@ class CodeStyleFixerQualityCheck extends QualityCheck
     {
         $this->repository = $repository;
         $this->command_runner = $command_runner;
+        $this->file_signature_resolver = $file_signature_resolver;
         $this->php_cs_fixer_binary = $php_cs_fixer_binary;
         $this->php_cs_fixer_config_file = $php_cs_fixer_config_file;
         $this->output_callback = $output_callback;
@@ -79,7 +86,7 @@ class CodeStyleFixerQualityCheck extends QualityCheck
         $file_path_on_disk = $this->repository->getFilePath($file_path);
 
         try {
-            $file_md5 = md5_file($file_path_on_disk);
+            $file_signature = $this->file_signature_resolver->getSignature($file_path_on_disk);
 
             $this->command_runner->runCommand(
                 $this->prepareCodeStyleFixerCommand(
@@ -90,7 +97,7 @@ class CodeStyleFixerQualityCheck extends QualityCheck
                 $project_path
             );
 
-            if (md5_file($file_path_on_disk) != $file_md5) {
+            if ($file_signature != $this->file_signature_resolver->getSignature($file_path_on_disk)) {
                 $this->printToOutput(sprintf('    File %s has been modified. Staging changes...', $file_path));
                 $this->repository->stageFile($file_path);
             }

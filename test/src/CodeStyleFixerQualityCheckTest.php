@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace PhpCloudOrg\Meta\Test;
 
 use PhpCloudOrg\Meta\CodeQualityChecker\FilePathMatcher\FilePathMatcher;
+use PhpCloudOrg\Meta\CodeQualityChecker\FileSignatureResolver\FileSignatureResolverInterface;
 use PhpCloudOrg\Meta\CodeQualityChecker\QualityCheck\CodeStyleFixerQualityCheck;
 use PhpCloudOrg\Meta\CodeRepository\CodeRepositoryInterface;
 use PhpCloudOrg\Meta\CommandRunner\CommandRunnerInterface;
@@ -35,9 +36,17 @@ class CodeStyleFixerQualityCheckTest extends TestCase
             ->method('fileExists')
             ->willReturn(true);
 
+        /** @var MockObject|FileSignatureResolverInterface $file_signature_resolver */
+        $file_signature_resolver = $this->createMock(FileSignatureResolverInterface::class);
+        $file_signature_resolver
+            ->expects($this->atLeast(3))
+            ->method('getSignature')
+            ->willReturn('file-sig');
+
         $check = new CodeStyleFixerQualityCheck(
             $repository,
             $command_runner,
+            $file_signature_resolver,
             'php-cs-fixer',
             '.php_cs.php',
             null,
