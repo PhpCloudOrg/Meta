@@ -41,4 +41,18 @@ class CodeQualityChecker
             $quality_check->check($this->code_repository->getRepositoryPath(), $changed_files);
         }
     }
+
+    public function communicateFailure(\Throwable $e, callable $output_callback)
+    {
+        call_user_func($output_callback, sprintf('Configured checks failed. Reason: %s', $e->getMessage()));
+        call_user_func($output_callback, '    File: ' . $e->getFile());
+        call_user_func($output_callback, '    Line: ' . $e->getLine());
+
+        if ($e->getPrevious()) {
+            call_user_func($output_callback, '');
+            call_user_func($output_callback, sprintf('    Previous: %s', $e->getPrevious()->getMessage()));
+            call_user_func($output_callback, '        File: ' . $e->getPrevious()->getFile());
+            call_user_func($output_callback, '        Line: ' . $e->getPrevious()->getLine());
+        }
+    }
 }

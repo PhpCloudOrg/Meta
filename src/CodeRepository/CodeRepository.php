@@ -58,6 +58,10 @@ class CodeRepository implements CodeRepositoryInterface
         $result = [];
 
         foreach ($lines as $line) {
+            if (empty($line)) {
+                continue;
+            }
+
             $result[] = trim(substr($line, 1));
         }
 
