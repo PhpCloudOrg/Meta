@@ -8,26 +8,21 @@
 
 declare(strict_types=1);
 
-namespace PhpCloudOrg\Meta\CodeQualityChecker\QualityCheck;
+namespace PhpCloudOrg\Meta\CodeQualityChecker\QualityCheck\Fixer;
 
 use Exception;
 use PhpCloudOrg\Meta\CodeQualityChecker\FilePathMatcher\FilePathMatcherInterface;
 use PhpCloudOrg\Meta\CodeQualityChecker\FileSignatureResolver\FileSignatureResolverInterface;
+use PhpCloudOrg\Meta\CodeQualityChecker\QualityCheck\CheckException;
+use PhpCloudOrg\Meta\CodeQualityChecker\QualityCheck\QualityCheck;
 use PhpCloudOrg\Meta\CodeRepository\CodeRepositoryInterface;
 use PhpCloudOrg\Meta\CommandRunner\CommandRunnerInterface;
 
 class CodeStyleFixerQualityCheck extends QualityCheck
 {
-    private $repository;
-    private $command_runner;
     private $php_cs_fixer_binary;
     private $php_cs_fixer_config_file;
-    private $output_callback;
     private $file_path_matchers;
-    /**
-     * @var FileSignatureResolverInterface
-     */
-    private $file_signature_resolver;
 
     public function __construct(
         CodeRepositoryInterface $repository,
@@ -39,12 +34,10 @@ class CodeStyleFixerQualityCheck extends QualityCheck
         FilePathMatcherInterface ...$file_path_matchers
     )
     {
-        $this->repository = $repository;
-        $this->command_runner = $command_runner;
-        $this->file_signature_resolver = $file_signature_resolver;
+        parent::__construct($repository, $command_runner, $file_signature_resolver, $output_callback);
+
         $this->php_cs_fixer_binary = $php_cs_fixer_binary;
         $this->php_cs_fixer_config_file = $php_cs_fixer_config_file;
-        $this->output_callback = $output_callback;
         $this->file_path_matchers = $file_path_matchers;
     }
 
@@ -55,7 +48,7 @@ class CodeStyleFixerQualityCheck extends QualityCheck
 
         foreach ($changed_files as $changed_file) {
             if ($this->shouldFixFile($changed_file)) {
-                $this->fixFile($this->repository->getRepositoryPath(), $changed_file);
+                $this->fixFile($changed_file);
             } else {
                 $this->printToOutput(sprintf('    Skipping %s...', $changed_file));
             }
@@ -79,25 +72,22 @@ class CodeStyleFixerQualityCheck extends QualityCheck
         return false;
     }
 
-    private function fixFile(string $project_path, string $file_path): void
+    private function fixFile(string $file_path): void
     {
         $this->printToOutput(sprintf('    Fixing file %s...', $file_path));
 
-        $file_path_on_disk = $this->repository->getFilePath($file_path);
-
         try {
-            $file_signature = $this->file_signature_resolver->getSignature($file_path_on_disk);
+            $file_signature = $this->getFileSignature($file_path);
 
-            $this->command_runner->runCommand(
+            $this->runCommand(
                 $this->prepareCodeStyleFixerCommand(
                     $this->php_cs_fixer_binary,
                     $this->php_cs_fixer_config_file,
                     $file_path
-                ),
-                $project_path
+                )
             );
 
-            if ($file_signature != $this->file_signature_resolver->getSignature($file_path_on_disk)) {
+            if ($file_signature != $this->getFileSignature($file_path)) {
                 $this->printToOutput(sprintf('    File %s has been modified. Staging changes...', $file_path));
                 $this->repository->stageFile($file_path);
             }
@@ -122,12 +112,5 @@ class CodeStyleFixerQualityCheck extends QualityCheck
             escapeshellarg($php_cs_fixer_config_file),
             escapeshellarg($file_path)
         );
-    }
-
-    private function printToOutput(string $message): void
-    {
-        if ($this->output_callback) {
-            call_user_func($this->output_callback, $message);
-        }
     }
 }

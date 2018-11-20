@@ -8,11 +8,11 @@
 
 declare(strict_types=1);
 
-namespace PhpCloudOrg\Meta\Test;
+namespace PhpCloudOrg\Meta\Test\CodeQualityChecker\Fixer;
 
 use PhpCloudOrg\Meta\CodeQualityChecker\FilePathMatcher\FilePathMatcher;
 use PhpCloudOrg\Meta\CodeQualityChecker\FileSignatureResolver\FileSignatureResolverInterface;
-use PhpCloudOrg\Meta\CodeQualityChecker\QualityCheck\CodeStyleFixerQualityCheck;
+use PhpCloudOrg\Meta\CodeQualityChecker\QualityCheck\Fixer\CodeStyleFixerQualityCheck;
 use PhpCloudOrg\Meta\CodeRepository\CodeRepositoryInterface;
 use PhpCloudOrg\Meta\CommandRunner\CommandRunnerInterface;
 use PHPUnit\Framework\MockObject\MockObject;

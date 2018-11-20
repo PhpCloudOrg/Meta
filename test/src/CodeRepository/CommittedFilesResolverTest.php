@@ -8,7 +8,7 @@
 
 declare(strict_types=1);
 
-namespace PhpCloudOrg\Meta\Test;
+namespace PhpCloudOrg\Meta\Test\CodeRepository;
 
 use PhpCloudOrg\Meta\CodeRepository\CodeRepository;
 use PhpCloudOrg\Meta\CommandRunner\CommandRunnerInterface;
@@ -78,7 +78,10 @@ class CommittedFilesResolverTest extends TestCase
         /** @var CommandRunnerInterface|MockObject $command_runner */
         $command_runner = $this->createMock(CommandRunnerInterface::class);
 
-        $repo = new CodeRepository(dirname(__DIR__) . '/fixtures/test-repo', $command_runner);
+        $repo = new CodeRepository(
+            dirname(dirname(__DIR__)) . '/fixtures/test-repo',
+            $command_runner
+        );
 
         $this->assertSame($expected_exists, $repo->fileExists($file_path));
     }

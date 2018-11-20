@@ -8,7 +8,7 @@
 
 declare(strict_types=1);
 
-namespace PhpCloudOrg\Meta\Test;
+namespace PhpCloudOrg\Meta\Test\CodeQualityChecker;
 
 use PhpCloudOrg\Meta\CodeQualityChecker\CodeQualityChecker;
 use PhpCloudOrg\Meta\CodeQualityChecker\QualityCheck\QualityCheckInterface;
@@ -27,7 +27,7 @@ class CodeQualityCheckerTest extends TestCase
         /** @var CodeRepositoryInterface $code_repository */
         $code_repository = $this->createMock(CodeRepositoryInterface::class);
 
-        new CodeQualityChecker($code_repository);
+        new CodeQualityChecker($code_repository, null);
     }
 
     public function testWillCallEachQualityCheck()
@@ -51,6 +51,7 @@ class CodeQualityCheckerTest extends TestCase
             ->expects($this->once())
             ->method('check');
 
-        (new CodeQualityChecker($code_repository, $first_quality_check, $second_quality_check))->check();
+        (new CodeQualityChecker($code_repository, null, $first_quality_check, $second_quality_check))
+            ->check();
     }
 }
