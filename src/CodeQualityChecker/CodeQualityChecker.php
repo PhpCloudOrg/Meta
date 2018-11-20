@@ -13,6 +13,7 @@ namespace PhpCloudOrg\Meta\CodeQualityChecker;
 use LogicException;
 use PhpCloudOrg\Meta\CodeQualityChecker\QualityCheck\QualityCheckInterface;
 use PhpCloudOrg\Meta\CodeRepository\CodeRepositoryInterface;
+use Throwable;
 
 class CodeQualityChecker
 {
@@ -42,7 +43,7 @@ class CodeQualityChecker
         }
     }
 
-    public function communicateFailure(\Throwable $e, callable $output_callback)
+    public function communicateFailure(Throwable $e, callable $output_callback)
     {
         call_user_func($output_callback, '');
         call_user_func($output_callback, 'Configured checks failed!');
@@ -50,7 +51,7 @@ class CodeQualityChecker
         $this->outputExceptionDetails($e, $output_callback, '    ');
     }
 
-    private function outputExceptionDetails(\Throwable $e, callable $output_callback, string $indent)
+    private function outputExceptionDetails(Throwable $e, callable $output_callback, string $indent)
     {
         call_user_func($output_callback, '');
         call_user_func(

@@ -17,16 +17,19 @@ class CodeRepository implements CodeRepositoryInterface
     private $repository_path;
     private $command_runner;
     private $git_binary;
+    private $directory_separator;
 
     public function __construct(
         string $repository_path,
         CommandRunnerInterface $command_runner,
-        string $git_binary = 'git'
+        string $git_binary = 'git',
+        string $directory_separator = DIRECTORY_SEPARATOR
     )
     {
         $this->git_binary = $git_binary;
-        $this->repository_path = $repository_path;
+        $this->repository_path = rtrim($repository_path, $directory_separator);
         $this->command_runner = $command_runner;
+        $this->directory_separator = $directory_separator;
     }
 
     public function getRepositoryPath(): string
@@ -36,7 +39,7 @@ class CodeRepository implements CodeRepositoryInterface
 
     public function getFilePath(string $file_path): string
     {
-        return $this->repository_path . '/'. $file_path;
+        return $this->repository_path . $this->directory_separator . ltrim($file_path, $this->directory_separator);
     }
 
     public function fileExists(string $file_path): bool
