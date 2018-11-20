@@ -46,12 +46,12 @@ class CodeQualityChecker
         }
     }
 
-    public function communicateFailure(Throwable $e, callable $output_callback)
+    public function communicateFailure(Throwable $e)
     {
         $this->printMessage('');
         $this->printMessage('Configured checks failed!');
 
-        $this->outputExceptionDetails($e, $output_callback, '    ');
+        $this->outputExceptionDetails($e, $this->output_callback, '    ');
     }
 
     private function outputExceptionDetails(Throwable $e, callable $output_callback, string $indent)

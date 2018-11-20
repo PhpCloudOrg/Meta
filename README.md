@@ -28,12 +28,7 @@ if (is_file($qc_file_path)) {
         $quality_checker = require_once $qc_file_path;
         $quality_checker->check();
     } catch (\Throwable $e) {
-        $quality_checker->communicateFailure(
-            $e,
-            function (string $message) {
-                print "{$message}\n";
-            }
-        );
+        $quality_checker->communicateFailure($e);
         
         exit(1);
     }

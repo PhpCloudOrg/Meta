@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace PhpCloudOrg\Meta\Test\CodeQualityChecker;
 
+use Exception;
 use PhpCloudOrg\Meta\CodeQualityChecker\CodeQualityChecker;
 use PhpCloudOrg\Meta\CodeQualityChecker\QualityCheck\QualityCheckInterface;
 use PhpCloudOrg\Meta\CodeRepository\CodeRepositoryInterface;
@@ -53,5 +54,42 @@ class CodeQualityCheckerTest extends TestCase
 
         (new CodeQualityChecker($code_repository, null, $first_quality_check, $second_quality_check))
             ->check();
+    }
+
+    public function testWillCommunicateFailure()
+    {
+        /** @var CodeRepositoryInterface $code_repository */
+        $code_repository = $this->createMock(CodeRepositoryInterface::class);
+
+        /** @var MockObject|QualityCheckInterface $quality_check */
+        $quality_check = $this->createMock(QualityCheckInterface::class);
+
+        $messages = [];
+
+        $output_callback = function (string $message) use (&$messages) {
+            $messages[] = $message;
+        };
+
+        (new CodeQualityChecker($code_repository, $output_callback, $quality_check))
+            ->communicateFailure(
+                new Exception('First message', 0, new Exception('Second message'))
+            );
+
+        $this->assertInternalType('array', $messages);
+        $this->assertNotEmpty($messages);
+
+        $first_message_found = false;
+        $second_message_found = false;
+
+        foreach ($messages as $message) {
+            if (strpos($message, 'First message') !== false) {
+                $first_message_found = true;
+            } elseif (strpos($message, 'Second message') !== false) {
+                $second_message_found = true;
+            }
+        }
+
+        $this->assertTrue($first_message_found);
+        $this->assertTrue($second_message_found);
     }
 }
